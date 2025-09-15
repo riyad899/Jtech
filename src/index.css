@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* Custom Color Variables for jTech */
+:root {
+  --color-primary: #0C2F4F;        /* Plain Blue - Primary brand color */
+  --color-secondary: #0C2F4F;      /* Same blue for consistency */
+  --color-light: #FEFEFE;          /* Near White - Light backgrounds/text */
+  --color-primary-light: #0C2F4F;  /* Same blue - no variations */
+  --color-primary-dark: #0C2F4F;   /* Same blue - for buttons and text */
+  --color-accent: #0C2F4F;         /* Same blue for accent */
+  --color-button: #0C2F4F;         /* Button color */
+  --color-text-dark: #0C2F4F;      /* Dark text color */
+}
+
+/* Custom Utility Classes */
+.bg-brand-primary { background-color: var(--color-primary); }
+.bg-brand-secondary { background-color: var(--color-secondary); }
+.bg-brand-light { background-color: var(--color-light); }
+.bg-brand-button { background-color: var(--color-button); }
+.text-brand-primary { color: var(--color-primary); }
+.text-brand-secondary { color: var(--color-secondary); }
+.text-brand-light { color: var(--color-light); }
+.text-brand-dark { color: var(--color-text-dark); }
+.text-brand-button { color: var(--color-button); }
+.border-brand-primary { border-color: var(--color-primary); }
+.border-brand-secondary { border-color: var(--color-secondary); }
+.border-brand-button { border-color: var(--color-button); }
+
+/* Custom gradient utilities */
+.gradient-brand-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
+}
+.gradient-brand-dark {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
+}
+.gradient-brand-light {
+  background: linear-gradient(135deg, var(--color-light), #f8f9fa);
+}
+.gradient-brand-button {
+  background: linear-gradient(135deg, var(--color-button), var(--color-primary));
+}
