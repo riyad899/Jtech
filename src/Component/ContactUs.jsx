@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import {
   Mail,
   Phone,
@@ -15,8 +16,11 @@ import {
   Building,
   Calendar
 } from 'lucide-react';
+import useAxiosPublic from '../Hook/useAxiousPublic';
 
 const ContactUs = () => {
+  const { messageAPI } = useAxiosPublic();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,10 +43,26 @@ const ContactUs = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Prepare message data according to API requirements
+      const messageData = {
+        fullName: formData.name,
+        email: formData.email,
+        companyName: formData.company || undefined, // Optional field
+        serviceInterestedIn: formData.service || undefined, // Optional field
+        message: formData.message
+      };
+
+      // Submit message to the API
+      const response = await messageAPI.submitMessage(messageData);
+
       setIsSubmitting(false);
       setIsSubmitted(true);
+
+      // Show toast notification
+      toast.success('Message sent successfully! We\'ll get back to you soon.');
+
+      // Reset form
       setFormData({
         name: '',
         email: '',
@@ -53,7 +73,14 @@ const ContactUs = () => {
 
       // Reset success message after 3 seconds
       setTimeout(() => setIsSubmitted(false), 3000);
-    }, 2000);
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error('Error submitting message:', error);
+
+      // Show error toast
+      const errorMessage = error.response?.data?.message || 'Failed to send message. Please try again.';
+      toast.error(errorMessage);
+    }
   };
 
   const containerVariants = {
@@ -91,22 +118,22 @@ const ContactUs = () => {
     {
       icon: Mail,
       title: "Email Us",
-      details: "hello@smarttech.com",
+      details: "jtech6996@gmail.com",
       subtitle: "Get a response within 24 hours",
       gradient: "from-[#0C2F4F]/10 to-[#0C2F4F]/5"
     },
     {
       icon: Phone,
       title: "Call Us",
-      details: "+1 (555) 123-4567",
-      subtitle: "Mon-Fri, 9 AM - 6 PM EST",
+      details: "+8801969576277",
+      subtitle: "Mon-Fri, 9 AM - 6 PM",
       gradient: "from-[#0C2F4F]/10 to-[#0C2F4F]/5"
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      details: "123 Tech Street, Silicon Valley",
-      subtitle: "San Francisco, CA 94105",
+      details: "Savar, Dhaka",
+      subtitle: "Bangladesh",
       gradient: "from-[#0C2F4F]/10 to-[#0C2F4F]/5"
     }
   ];
@@ -238,8 +265,8 @@ const ContactUs = () => {
                     <Clock className="w-4 h-4" />
                     <span className="text-sm font-medium font-serif">Business Hours</span>
                   </div>
-                  <p className="text-[#0C2F4F]/70 text-xs mt-1">Monday - Friday: 9:00 AM - 6:00 PM EST</p>
-                  <p className="text-[#0C2F4F]/70 text-xs">Saturday: 10:00 AM - 4:00 PM EST</p>
+                  <p className="text-[#0C2F4F]/70 text-xs mt-1">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                  <p className="text-[#0C2F4F]/70 text-xs">Saturday: 10:00 AM - 4:00 PM</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -474,14 +501,7 @@ const ContactUs = () => {
                 <p className="text-[#0C2F4F] text-sm font-medium mb-1">{item.details}</p>
                 <p className="text-[#0C2F4F]/70 text-xs">{item.subtitle}</p>
 
-                <motion.div
-                  className="flex items-center justify-center text-[#0C2F4F] text-sm font-medium mt-4 group-hover:text-[#0C2F4F] transition-colors duration-300"
-                  whileHover={{ x: 2 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span className="font-serif">Contact Now</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                </motion.div>
+
               </div>
             </motion.div>
           ))}

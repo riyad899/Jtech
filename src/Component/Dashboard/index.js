@@ -1,0 +1,8 @@
+export { ManageUsers } from './ManageUsers';
+export { ViewOrders } from './ViewOrders';
+export { Analysis } from './Analysis';
+export { ManageProducts } from './ManageProducts';
+export { ManageServices } from './ManageServices';
+export { ManageTeam } from './ManageTeam';
+export { ManageJobs } from './ManageJobs';
+export { ManageMessages } from './ManageMessages';

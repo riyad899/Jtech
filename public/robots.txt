@@ -1,0 +1,21 @@
+# robots.txt for jTech
+# This file tells search engine crawlers which pages or files they can or can't request from your site
+
+User-agent: *
+Allow: /
+
+# Block access to certain directories
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /checkout
+Disallow: /admin
+
+# Allow search engines to crawl all assets
+Allow: /src/assets/
+Allow: /public/
+
+# Sitemap location
+Sitemap: https://jtechvision.com/sitemap.xml
+
+# Crawl-delay (optional - helps prevent server overload)
+Crawl-delay: 1

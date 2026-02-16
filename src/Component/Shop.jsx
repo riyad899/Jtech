@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import useAxiosPublic from '../Hook/useAxiousPublic';
+import { useCart } from '../Context/CartContext';
+import { useAuth } from '../AuthProvider/AuthContext';
 import {
   Monitor,
   Smartphone,
@@ -14,112 +18,78 @@ import {
   Star,
   ShoppingCart,
   Eye,
-  Heart,
   Filter,
-  Search
+  Search,
+  ShoppingBag,
+  Plus,
+  CheckCircle,
+  X
 } from 'lucide-react';
 
 const Shop = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const navigate = useNavigate();
+  const { productAPI } = useAxiosPublic();
+  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [hoveredProduct, setHoveredProduct] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [addedProduct, setAddedProduct] = useState(null);
 
-  // Reset hover state when category changes
+  // Fetch products from API
   useEffect(() => {
-    setHoveredProduct(null);
-  }, [selectedCategory]);
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await productAPI.getProducts();
+        // Limit to 6 products only
+        const limitedProducts = response.data.slice(0, 6);
+        setProducts(limitedProducts);
+        setError('');
+      } catch (err) {
+        setError('Failed to fetch products: ' + (err.response?.data?.message || err.message));
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const categories = [
-    { id: 'all', name: 'All Products', icon: Monitor },
-    { id: 'computers', name: 'Computers', icon: Monitor },
-    { id: 'mobile', name: 'Mobile', icon: Smartphone },
-    { id: 'audio', name: 'Audio', icon: Headphones },
-    { id: 'accessories', name: 'Accessories', icon: Keyboard }
-  ];
+    fetchProducts();
+  }, []); // Empty dependency array to run only once
 
-  const products = [
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      category: 'computers',
-      price: 2499,
-      originalPrice: 2799,
-      image: '/api/placeholder/300/300',
-      rating: 4.9,
-      reviews: 128,
-      features: ['M2 Pro Chip', '32GB RAM', '1TB SSD', 'Liquid Retina XDR'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    },
-    {
-      id: 2,
-      name: 'iPhone 15 Pro',
-      category: 'mobile',
-      price: 999,
-      originalPrice: 1199,
-      image: '/api/placeholder/300/300',
-      rating: 4.8,
-      reviews: 256,
-      features: ['A17 Pro Chip', '128GB Storage', 'Pro Camera', 'Titanium Design'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    },
-    {
-      id: 3,
-      name: 'Sony WH-1000XM5',
-      category: 'audio',
-      price: 299,
-      originalPrice: 399,
-      image: '/api/placeholder/300/300',
-      rating: 4.7,
-      reviews: 89,
-      features: ['Noise Canceling', '30hr Battery', 'Hi-Res Audio', 'Quick Charge'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    },
-    {
-      id: 4,
-      name: 'Gaming Setup',
-      category: 'computers',
-      price: 1899,
-      originalPrice: 2299,
-      image: '/api/placeholder/300/300',
-      rating: 4.9,
-      reviews: 67,
-      features: ['RTX 4080', '32GB DDR5', '1TB NVMe', '144Hz Monitor'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    },
-    {
-      id: 5,
-      name: 'Mechanical Keyboard',
-      category: 'accessories',
-      price: 149,
-      originalPrice: 199,
-      image: '/api/placeholder/300/300',
-      rating: 4.6,
-      reviews: 234,
-      features: ['Cherry MX Blue', 'RGB Backlight', 'Wireless', 'Hot-Swappable'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    },
-    {
-      id: 6,
-      name: 'Samsung Galaxy S24',
-      category: 'mobile',
-      price: 799,
-      originalPrice: 999,
-      image: '/api/placeholder/300/300',
-      rating: 4.5,
-      reviews: 178,
-      features: ['Snapdragon 8 Gen 3', '256GB Storage', 'AI Camera', '5G Ready'],
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5'
-    }
-  ];
+  // Helper functions for product card design
+  const getCategoryIcon = (category) => {
+    const icons = {
+      computers: Monitor,
+      mobile: Smartphone,
+      audio: Headphones,
+      accessories: Keyboard,
+      laptop: Monitor,
+      phone: Smartphone,
+      gaming: Cpu,
+      electronics: Monitor
+    };
+    return icons[category?.toLowerCase()] || Monitor;
+  };
 
-  const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter(product => product.category === selectedCategory);
+  const getPriceColor = (price) => {
+    return 'text-[#0D3050]';
+  };
+
+  // Handle add to cart with success modal
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    setAddedProduct(product);
+    setShowSuccessModal(true);
+
+    // Auto hide modal after 0.5 seconds
+    setTimeout(() => {
+      setShowSuccessModal(false);
+      setAddedProduct(null);
+    }, 500);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -192,195 +162,244 @@ const Shop = () => {
           </p>
         </motion.div>
 
-        {/* Category Filter */}
-        <motion.div
-          className="flex flex-wrap justify-center gap-4 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          {categories.map((category) => {
-            const IconComponent = category.icon;
-            return (
-              <motion.button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center px-6 py-3 rounded-xl font-light text-sm tracking-wide transition-all duration-300 backdrop-blur-sm ${
-                  selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] text-white shadow-lg'
-                    : 'bg-white/80 text-gray-600 border border-gray-200 hover:border-[#0C2F4F]/50 hover:bg-[#0C2F4F]/5'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <IconComponent className="w-4 h-4 mr-2" />
-                {category.name}
-              </motion.button>
-            );
-          })}
-        </motion.div>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0C2F4F]"></div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-8 text-center">
+            {error}
+          </div>
+        )}
 
         {/* Products Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedCategory}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 min-h-[600px]"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-          >
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
+        {!loading && !error && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 "
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              {products.length > 0 ? (
+                products.map((product) => {
+                  const IconComponent = getCategoryIcon(product.category);
+                  const isExpensive = product.price > 1000;
+                  const isMidRange = product.price > 500 && product.price <= 1000;
+                  const isBudget = product.price <= 500;
+
+                  return (
+                    <motion.div
+                      key={product._id}
+                      onClick={() => navigate(`/product/${product._id}`)}
+                      className="bg-brand-light/80 backdrop-blur-xl border border-[#0C2F4F]/20 hover:border-[#0C2F4F]/50 rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:shadow-[#0C2F4F]/20 transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer"
+                      variants={cardVariants}
+                      layout
+                      onMouseEnter={() => setHoveredProduct(product._id)}
+                      onMouseLeave={() => setHoveredProduct(null)}
+                      whileHover={{ y: -10 }}
+                    >
+                      {/* Image Container */}
+                      <div className="relative h-48 overflow-hidden">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div className="w-full h-full bg-gradient-to-br from-[#0C2F4F]/5 via-[#0C2F4F]/5 to-[#0C2F4F]/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{display: product.image ? 'none' : 'flex'}}>
+                          <IconComponent className="w-16 h-16 text-[#0C2F4F]/60" />
+                        </div>
+
+                        {/* Price Badge */}
+                        <div className="absolute top-3 right-3 space-y-2">
+                          {isExpensive && (
+                            <span className="block bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                              Premium
+                            </span>
+                          )}
+                          {isMidRange && (
+                            <span className="block bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                              Popular
+                            </span>
+                          )}
+                          {isBudget && (
+                            <span className="block bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                              Budget
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Category Badge */}
+                        <div className="absolute bottom-3 left-3 bg-[#0C2F4F]/80 backdrop-blur-sm text-brand-light px-3 py-1 rounded-full text-xs font-medium capitalize">
+                          {product.category}
+                        </div>
+
+                        {/* View Overlay */}
+                        <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                          <Eye className="text-brand-light opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-8 h-8" />
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-5">
+                        {/* Brand & Title */}
+                        <div className="mb-2">
+                          <span className="text-xs text-[#0C2F4F]/60 font-semibold uppercase tracking-wide">
+                            {product.brand}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2 line-clamp-1 text-[#0C2F4F]">
+                          {product.name}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-sm mb-3 line-clamp-2 text-[#0C2F4F]/70">
+                          {product.description}
+                        </p>
+
+                        {/* Rating */}
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < Math.floor(product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-[#0C2F4F]/20'}`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-[#0C2F4F]/70 font-medium">({product.rating || 0})</span>
+                        </div>
+
+                        {/* Price */}
+                        <div className="mb-4">
+                          <span className={`text-2xl font-bold ${getPriceColor(product.price)}`}>
+                            TK{product.price}
+                          </span>
+                          {product.price > 100 && (
+                            <span className="text-sm text-[#0C2F4F]/40 line-through ml-2">
+                              TK{Math.round(product.price * 1.2)}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/buy-product/${product._id}`);
+                            }}
+                            className="flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-[#0D3050] hover:bg-[#0A2540] text-white focus:ring-[#0D3050]"
+                          >
+                            <ShoppingBag className="w-4 h-4 inline mr-2" />
+                            Buy Now
+                          </button>
+                          {user && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddToCart(product);
+                              }}
+                              className="p-3 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                              title="Add to Cart"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })
+              ) : (
                 <motion.div
-                  key={`${selectedCategory}-${product.id}`}
-                  className="group relative bg-brand-light/80 backdrop-blur-xl rounded-3xl border border-[#0C2F4F]/20 hover:border-[#0C2F4F]/50 transition-all duration-500 shadow-xl hover:shadow-[#0C2F4F]/20 cursor-pointer overflow-hidden"
+                  className="col-span-full flex flex-col items-center justify-center py-20"
                   variants={cardVariants}
-                  layout
-                  onMouseEnter={() => setHoveredProduct(product.id)}
-                  onMouseLeave={() => setHoveredProduct(null)}
-                  whileHover={{ y: -10 }}
                 >
-              {/* Background Gradient */}
-              <motion.div
-                className={`absolute inset-0 bg-gradient-to-br ${product.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-              ></motion.div>
-
-              {/* Sale Badge */}
-              {product.originalPrice > product.price && (
-                <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] text-white px-3 py-1 rounded-full text-xs font-bold">
-                  SALE
-                </div>
+                  <div className="text-center">
+                    <ShoppingBag className="w-16 h-16 text-[#0C2F4F]/40 mx-auto mb-4" />
+                    <p className="text-xl mb-2 text-[#0C2F4F]/70">
+                      No products found
+                    </p>
+                    <p className="text-sm mb-6 text-[#0C2F4F]/50">
+                      No products available at the moment
+                    </p>
+                  </div>
+                </motion.div>
               )}
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
 
-              {/* Wishlist Button */}
-              <motion.button
-                className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-600 hover:text-[#0C2F4F] transition-colors duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+      {/* Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSuccessModal(false)}
+            />
+
+            {/* Modal */}
+            <motion.div
+              className="relative bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 border border-[#0C2F4F]/10"
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <Heart className="w-5 h-5" />
-              </motion.button>
+                <X className="w-5 h-5" />
+              </button>
 
-              <div className="relative z-10 p-10">
-                {/* Product Image Placeholder */}
-                <div className={`w-full h-48 bg-gradient-to-br ${product.gradient} rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden`}>
-                  <motion.div
-                    className="text-white/80 text-6xl"
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.8 }}
-                  >
-                    {product.category === 'computers' && <Monitor className="w-16 h-16" />}
-                    {product.category === 'mobile' && <Smartphone className="w-16 h-16" />}
-                    {product.category === 'audio' && <Headphones className="w-16 h-16" />}
-                    {product.category === 'accessories' && <Keyboard className="w-16 h-16" />}
-                  </motion.div>
-
-                  {/* Quick View Button */}
-                  <motion.button
-                    className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <Eye className="w-8 h-8 text-white" />
-                  </motion.button>
+              {/* Content */}
+              <div className="text-center">
+                {/* Success Icon */}
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
+
+                {/* Title */}
+                <h3 className="text-lg font-semibold text-[#0C2F4F] mb-2">
+                  Added to Cart!
+                </h3>
 
                 {/* Product Info */}
-                <div className="space-y-4">
-                  <h3 className="font-light text-lg text-[#0C2F4F] group-hover:text-[#0C2F4F]">
-                    {product.name}
-                  </h3>
-
-                  {/* Rating */}
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? 'text-[#0C2F4F] fill-current'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-[#0C2F4F] font-light">
-                      {product.rating} ({product.reviews} reviews)
-                    </span>
+                {addedProduct && (
+                  <div className="text-sm text-[#0C2F4F]/70 mb-4">
+                    <span className="font-medium">{addedProduct.name}</span> has been added to your cart.
                   </div>
-
-                  {/* Features */}
-                  <ul className="space-y-1">
-                    {product.features.slice(0, 2).map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm text-[#0C2F4F] font-light">
-                        <div className={`w-2 h-2 bg-gradient-to-r ${product.gradient} rounded-full mr-3`}></div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Price */}
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl font-light text-[#0C2F4F]">
-                      ${product.price}
-                    </span>
-                    {product.originalPrice > product.price && (
-                      <span className="text-lg text-[#0C2F4F]/70 line-through font-light">
-                        ${product.originalPrice}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Add to Cart Button */}
-                  <motion.button
-                    className={`group/btn relative overflow-hidden bg-gradient-to-r ${product.gradient} text-brand-light px-6 py-3 rounded-xl font-light text-sm tracking-wide shadow-xl hover:shadow-[#0C2F4F]/30 transition-all duration-300 w-full`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span className="relative z-10 flex items-center justify-center">
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to Cart
-                    </span>
-                  </motion.button>
-                </div>
+                )}
               </div>
             </motion.div>
-              ))
-            ) : (
-              <motion.div
-                className="col-span-full flex flex-col items-center justify-center py-20"
-                variants={cardVariants}
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-[#0C2F4F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ShoppingCart className="w-8 h-8 text-[#0C2F4F]/50" />
-                  </div>
-                  <h3 className="text-xl font-light text-[#0C2F4F] mb-2">No Products Found</h3>
-                  <p className="text-[#0C2F4F]/70 font-light">Try selecting a different category</p>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
-        </AnimatePresence>        {/* View All Button */}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <motion.button
-            className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] text-brand-light px-8 py-4 rounded-2xl font-light text-lg tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="relative z-10">View All Products</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </motion.button>
-        </motion.div>
-      </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

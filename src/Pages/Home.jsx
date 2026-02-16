@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ChevronRight, Monitor, Cpu, Smartphone, Cloud, HardDrive, Zap, Shield, Users, Headphones, Star, ArrowRight, Menu, X, Code, Settings, Database, Wifi, Sparkles } from 'lucide-react';
 import ServiceSlider from '../Component/ServiceSlider';
 import Services from '../Component/Services';
@@ -9,9 +10,41 @@ import Features from '../Component/Features';
 import Team from '../Component/Team';
 import WhyChooseUs from '../Component/WhyChooseUs';
 import ContactUs from '../Component/ContactUs';
+import SEO from '../utils/SEO';
 
 
 export const Home = () => {
+  // Structured data for homepage
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "jTech",
+    "description": "Leading provider of technology solutions, web development, mobile apps, hardware services, and cloud computing.",
+    "url": "https://jtechvision.com",
+    "logo": "https://jtechvision.com/logo.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+1-XXX-XXX-XXXX",
+      "contactType": "customer service",
+      "availableLanguage": ["English"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "US"
+    },
+    "sameAs": [
+      "https://www.facebook.com/jtech",
+      "https://www.twitter.com/jtech",
+      "https://www.linkedin.com/company/jtech",
+      "https://www.instagram.com/jtech"
+    ],
+    "offers": {
+      "@type": "AggregateOffer",
+      "offerCount": "50+",
+      "category": "Technology Services"
+    }
+  };
+
   // Animation variants for the cards
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -140,7 +173,17 @@ export const Home = () => {
   };
 
   return (
-    <section className="pt-32 pb-20 bg-gradient-to-br from-brand-light via-brand-light to-slate-50 text-[#0C2F4F] overflow-hidden relative">
+    <>
+      <SEO
+        title="jTech - Technology Solutions, Web Development & IT Services"
+        description="Transform your business with jTech's innovative technology solutions. Expert web development, mobile apps, cloud computing, hardware services, and IT consulting. 500+ projects delivered."
+        keywords="technology solutions, web development, mobile app development, IT services, cloud computing, hardware services, software development, digital transformation, IT consulting, jTech"
+        url="https://jtechvision.com/"
+        ogImage="https://jtechvision.com/og-home.jpg"
+        twitterImage="https://jtechvision.com/twitter-home.jpg"
+        structuredData={structuredData}
+      />
+      <section className="pt-32 pb-20 bg-gradient-to-br from-brand-light via-brand-light to-slate-50 text-[#0C2F4F] overflow-hidden relative">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(12,47,79,0.1)_1px,transparent_1px)] bg-[length:50px_50px]"></div>
@@ -173,7 +216,7 @@ export const Home = () => {
                 transition={{ duration: 0.2 }}
               >
                 <Sparkles className="w-3 h-3 mr-1.5" />
-                @Smart Technology Solutions
+                Smart Technology Solutions
               </motion.div>
 
               {/* Static Header */}
@@ -200,26 +243,30 @@ export const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <motion.button
-                className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] via-[#0C2F4F] to-[#0C2F4F] text-brand-light px-6 py-3 rounded-xl font-bold text-sm tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300 font-serif"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="relative z-10">Explore Our Services</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F] via-[#0C2F4F] to-[#0C2F4F] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <ArrowRight className="inline-block w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
-              </motion.button>
+              <Link to="/services">
+                <motion.button
+                  className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] via-[#0C2F4F] to-[#0C2F4F] text-brand-light px-6 py-3 rounded-xl font-bold text-sm tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300 font-serif"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className="relative z-10">Explore Our Services</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F] via-[#0C2F4F] to-[#0C2F4F] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <ArrowRight className="inline-block w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
+                </motion.button>
+              </Link>
 
-              <motion.button
-                className="group relative border-2 border-[#0C2F4F] text-[#0C2F4F] px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#0C2F4F]/5 transition-all duration-300 font-serif backdrop-blur-sm hover:border-[#0C2F4F]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="relative z-10">Shop Now</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F]/10 to-[#0C2F4F]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-              </motion.button>
+              <Link to="/products">
+                <motion.button
+                  className="group relative border-2 border-[#0C2F4F] text-[#0C2F4F] px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#0C2F4F]/5 transition-all duration-300 font-serif backdrop-blur-sm hover:border-[#0C2F4F]"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className="relative z-10">Shop Now</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F]/10 to-[#0C2F4F]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -402,5 +449,6 @@ export const Home = () => {
 
 
     </section>
+    </>
   )
 }

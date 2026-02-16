@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   Users,
   Target,
@@ -14,8 +15,44 @@ import {
   Shield,
   Heart
 } from 'lucide-react';
+import useAxiosPublic from '../Hook/useAxiousPublic';
+import SEO from '../utils/SEO';
 
 export const About = () => {
+  const { teamAPI } = useAxiosPublic();
+  const navigate = useNavigate();
+  const [team, setTeam] = useState([]);
+
+  // Structured data for About page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About jTech",
+    "description": "Learn about jTech's mission, values, and our experienced team of technology professionals. 500+ projects completed, 100+ happy clients, 5+ years of excellence.",
+    "url": "https://jtechvision.com/about",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "jTech",
+      "foundingDate": "2019",
+      "numberOfEmployees": "50+",
+      "slogan": "Transforming Ideas into Digital Reality"
+    }
+  };
+
+  // Fetch team members from API
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await teamAPI.getTeamMembers();
+        setTeam(response.data);
+      } catch (error) {
+        console.error('Error fetching team members:', error);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
+
   const stats = [
     { number: "500+", label: "Projects Completed", icon: CheckCircle },
     { number: "100+", label: "Happy Clients", icon: Users },
@@ -46,35 +83,20 @@ export const About = () => {
     }
   ];
 
-  const team = [
-    {
-      name: "Alex Johnson",
-      role: "CEO & Founder",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
-      bio: "Visionary leader with 10+ years in tech industry"
-    },
-    {
-      name: "Sarah Chen",
-      role: "CTO",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face",
-      bio: "Expert in scalable architecture and emerging technologies"
-    },
-    {
-      name: "Michael Rodriguez",
-      role: "Lead Developer",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
-      bio: "Full-stack developer passionate about clean code"
-    },
-    {
-      name: "Emily Davis",
-      role: "UI/UX Designer",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-      bio: "Creative designer focused on user-centered experiences"
-    }
-  ];
+  // Removed hardcoded team data - now fetched from API
 
   return (
-    <div className="min-h-screen pt-32 pb-20 bg-gradient-to-br from-brand-light via-brand-light to-slate-50 text-[#0C2F4F]">
+    <>
+      <SEO
+        title="About jTech - Our Story, Mission & Expert Team"
+        description="Discover jTech's journey in technology innovation. Learn about our mission, core values, and meet our expert team of 50+ professionals. 500+ projects delivered with excellence since 2019."
+        keywords="about jTech, company mission, technology team, IT professionals, company values, tech company story, innovation, reliability, customer focus"
+        url="https://jtechvision.com/about"
+        ogImage="https://jtechvision.com/og-about.jpg"
+        twitterImage="https://jtechvision.com/twitter-about.jpg"
+        structuredData={structuredData}
+      />
+      <div className="min-h-screen pt-32 pb-20 bg-gradient-to-br from-brand-light via-brand-light to-slate-50 text-[#0C2F4F]">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(12,47,79,0.1)_1px,transparent_1px)] bg-[length:50px_50px]"></div>
@@ -201,33 +223,39 @@ export const About = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                className="group bg-brand-light/80 backdrop-blur-xl p-6 rounded-3xl border border-[#0C2F4F]/20 hover:border-[#0C2F4F]/50 transition-all duration-500 shadow-xl hover:shadow-[#0C2F4F]/20 text-center"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -5 }}
-              >
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/20">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="font-bold text-[#0C2F4F] mb-1 font-serif">
-                  {member.name}
-                </h3>
-                <p className="text-[#0C2F4F] text-sm mb-3 font-medium">
-                  {member.role}
-                </p>
-                <p className="text-[#0C2F4F] text-xs leading-relaxed">
-                  {member.bio}
-                </p>
-              </motion.div>
-            ))}
+            {team && team.length > 0 ? (
+              team.map((member, index) => (
+                <motion.div
+                  key={member._id || member.name}
+                  className="group bg-brand-light/80 backdrop-blur-xl p-6 rounded-3xl border border-[#0C2F4F]/20 hover:border-[#0C2F4F]/50 transition-all duration-500 shadow-xl hover:shadow-[#0C2F4F]/20 text-center"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                >
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/20">
+                    <img
+                      src={member.image || member.photo || 'https://via.placeholder.com/150'}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-bold text-[#0C2F4F] mb-1 font-serif">
+                    {member.name}
+                  </h3>
+                  <p className="text-[#0C2F4F] text-sm mb-3 font-medium">
+                    {member.role || member.position}
+                  </p>
+                  <p className="text-[#0C2F4F] text-xs leading-relaxed line-clamp-2">
+                    {member.bio || member.description || ''}
+                  </p>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-[#0C2F4F] py-10">
+                Loading team members...
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -247,6 +275,7 @@ export const About = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.button
+              onClick={() => navigate('/contact')}
               className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] via-[#0C2F4F] to-[#0C2F4F] text-brand-light px-8 py-4 rounded-xl font-bold text-lg tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300 font-serif"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -256,6 +285,7 @@ export const About = () => {
             </motion.button>
 
             <motion.button
+              onClick={() => navigate('/services')}
               className="group relative border-2 border-[#0C2F4F] text-[#0C2F4F] px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#0C2F4F]/5 transition-all duration-300 font-serif backdrop-blur-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -266,5 +296,6 @@ export const About = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };

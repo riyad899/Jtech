@@ -207,10 +207,10 @@ const ServiceSlider = () => {
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden rounded-3xl">
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white backdrop-blur-xl"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDAsIDAsIDAsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiIC8+PC9zdmc+')] opacity-50"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDAsIDAsIDAsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiIC8+PC9zdmc+')] opacity-50 hidden md:block"></div>
 
-        {/* Floating Particles */}
-        <div className="absolute inset-0">
+        {/* Floating Particles - Hidden on mobile */}
+        <div className="absolute inset-0 hidden md:block">
           {[...Array(15)].map((_, i) => (
             <div
               key={i}
@@ -245,7 +245,7 @@ const ServiceSlider = () => {
               <div
                 key={`${service.id}-${index}`}
                 className={`
-                  flex-shrink-0 w-80 h-64 relative group cursor-pointer
+                  flex-shrink-0 w-64 h-48 md:w-80 md:h-64 relative group cursor-pointer
                   transform transition-all duration-500 ease-out
                   ${isHovered ? 'scale-105 -translate-y-2' : 'hover:scale-105 hover:-translate-y-2'}
                 `}
@@ -279,10 +279,10 @@ const ServiceSlider = () => {
                 `}>
                   <IconComponent className={`w-6 h-6 drop-shadow-lg transition-colors duration-500 ${isHovered ? 'text-[#0C2F4F]' : 'text-[#0C2F4F]/80'}`} />
 
-                  {/* Icon Glow Effect */}
+                  {/* Icon Glow Effect - Hidden on mobile */}
                   <div className={`
                     absolute inset-0 rounded-2xl bg-gradient-to-br from-white/40 to-gray-200/30
-                    blur-xl opacity-0 transition-opacity duration-500
+                    blur-xl opacity-0 transition-opacity duration-500 hidden md:block
                     ${isHovered ? 'opacity-60' : ''}
                   `}></div>
 
@@ -291,9 +291,9 @@ const ServiceSlider = () => {
                 </div>
 
                 {/* Content */}
-                <div className="relative h-full flex flex-col p-10 pt-10 overflow-hidden">
-                  {/* Timeline Badge */}
-                  <div className="absolute top-4 right-4 px-2 py-1 bg-[#0C2F4F]/10 text-[#0C2F4F] text-xs rounded-full font-light">
+                <div className="relative h-full flex flex-col p-6 md:p-10 pt-6 md:pt-10 overflow-hidden">
+                  {/* Timeline Badge - Hidden on mobile */}
+                  <div className="absolute top-4 right-4 px-2 py-1 bg-[#0C2F4F]/10 text-[#0C2F4F] text-xs rounded-full font-light hidden md:block">
                     {service.timeline}
                   </div>
 
@@ -313,9 +313,9 @@ const ServiceSlider = () => {
                     {service.description}
                   </p>
 
-                  {/* Detailed Description */}
+                  {/* Detailed Description - Hidden on mobile */}
                   <p className={`
-                    text-[#0C2F4F]/70 text-xs mb-4 leading-relaxed font-light
+                    text-[#0C2F4F]/70 text-xs mb-4 leading-relaxed font-light hidden md:block
                     transform transition-all duration-500 delay-100
                     ${isHovered ? 'translate-x-2 text-[#0C2F4F]' : ''}
                   `}>
@@ -332,9 +332,9 @@ const ServiceSlider = () => {
                     ${isHovered ? 'scale-x-100' : 'scale-x-0'}
                   `}></div>
 
-                  {/* Hover Effect Particles */}
+                  {/* Hover Effect Particles - Hidden on mobile */}
                   {isHovered && (
-                    <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-0 pointer-events-none hidden md:block">
                       {[...Array(6)].map((_, i) => (
                         <div
                           key={i}
@@ -351,9 +351,9 @@ const ServiceSlider = () => {
                   )}
                 </div>
 
-                {/* Corner Accent */}
+                {/* Corner Accent - Hidden on mobile */}
                 <div className={`
-                  absolute bottom-0 right-0 w-16 h-16
+                  absolute bottom-0 right-0 w-16 h-16 hidden md:block
                   bg-gray-100 opacity-30 rounded-tl-3xl rounded-br-2xl
                   transform transition-all duration-500
                   ${isHovered ? 'scale-125 opacity-50 bg-[#0c2f4f]' : ''}
@@ -363,17 +363,17 @@ const ServiceSlider = () => {
           })}
         </div>
 
-        {/* Enhanced Gradient Overlays */}
-        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-10"></div>
-        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10"></div>
+        {/* Enhanced Gradient Overlays - Hidden on mobile */}
+        <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-10 hidden md:block"></div>
+        <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10 hidden md:block"></div>
 
-        {/* Edge Glow Effects */}
-        <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-none z-20"></div>
-        <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-none z-20"></div>
+        {/* Edge Glow Effects - Hidden on mobile */}
+        <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-none z-20 hidden md:block"></div>
+        <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-none z-20 hidden md:block"></div>
       </div>
 
-      {/* Bottom Reflection */}
-      <div className="absolute -bottom-8 left-8 right-8 h-16 bg-gradient-to-b from-gray-200/20 to-transparent blur-xl rounded-3xl"></div>
+      {/* Bottom Reflection - Hidden on mobile */}
+      <div className="absolute -bottom-8 left-8 right-8 h-16 bg-gradient-to-b from-gray-200/20 to-transparent blur-xl rounded-3xl hidden md:block"></div>
     </div>
   );
 };

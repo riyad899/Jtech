@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import useAxiosPublic from '../Hook/useAxiousPublic';
 import {
   User,
   Users,
@@ -13,6 +15,31 @@ import {
 const Team = () => {
   const [hoveredMember, setHoveredMember] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const { teamAPI } = useAxiosPublic();
+
+  // Fetch team members from API
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        setLoading(true);
+        const response = await teamAPI.getTeamMembers();
+        setTeamMembers(response.data);
+      } catch (error) {
+        console.error('Error fetching team members:', error);
+        // Fallback to static data if API fails
+        setTeamMembers(staticTeamMembers);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
+
+
 
   // Function to handle modal opening
   const openModal = (member) => {
@@ -25,111 +52,6 @@ const Team = () => {
     setSelectedMember(null);
     document.body.classList.remove('modal-open');
   };
-
-  const teamMembers = [
-    {
-      id: 1,
-      name: 'Alex Thompson',
-      position: 'CEO & Founder',
-      department: 'Leadership',
-      image: '/api/placeholder/300/300',
-      bio: 'Visionary leader with 10+ years of experience in tech industry. Passionate about innovation and building amazing products.',
-      skills: ['Strategic Planning', 'Product Vision', 'Team Leadership', 'Business Development'],
-      social: {
-        linkedin: '#',
-        twitter: '#',
-        email: 'alex@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '10+ Years'
-    },
-    {
-      id: 2,
-      name: 'Sarah Chen',
-      position: 'CTO',
-      department: 'Technology',
-      image: '/api/placeholder/300/300',
-      bio: 'Technical architect and full-stack developer. Expert in scalable systems and modern web technologies.',
-      skills: ['System Architecture', 'Full-Stack Development', 'Cloud Computing', 'DevOps'],
-      social: {
-        linkedin: '#',
-        github: '#',
-        email: 'sarah@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '8+ Years'
-    },
-    {
-      id: 3,
-      name: 'Michael Rodriguez',
-      position: 'Lead Designer',
-      department: 'Design',
-      image: '/api/placeholder/300/300',
-      bio: 'Creative designer focused on user experience and beautiful interfaces. Award-winning UI/UX expert.',
-      skills: ['UI/UX Design', 'User Research', 'Prototyping', 'Design Systems'],
-      social: {
-        linkedin: '#',
-        twitter: '#',
-        email: 'michael@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '7+ Years'
-    },
-    {
-      id: 4,
-      name: 'Emma Williams',
-      position: 'Frontend Developer',
-      department: 'Development',
-      image: '/api/placeholder/300/300',
-      bio: 'React specialist with expertise in modern frontend frameworks and performance optimization.',
-      skills: ['React', 'JavaScript', 'TypeScript', 'Performance Optimization'],
-      social: {
-        github: '#',
-        linkedin: '#',
-        email: 'emma@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '5+ Years'
-    },
-    {
-      id: 5,
-      name: 'David Kim',
-      position: 'Backend Developer',
-      department: 'Development',
-      image: '/api/placeholder/300/300',
-      bio: 'Database expert and API architect. Specializes in high-performance backend systems and microservices.',
-      skills: ['Node.js', 'Python', 'Database Design', 'API Development'],
-      social: {
-        github: '#',
-        linkedin: '#',
-        email: 'david@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '6+ Years'
-    },
-    {
-      id: 6,
-      name: 'Lisa Anderson',
-      position: 'Mobile Developer',
-      department: 'Development',
-      image: '/api/placeholder/300/300',
-      bio: 'Mobile app specialist with expertise in both iOS and Android development using React Native and Flutter.',
-      skills: ['React Native', 'Flutter', 'iOS', 'Android'],
-      social: {
-        github: '#',
-        linkedin: '#',
-        email: 'lisa@company.com'
-      },
-      gradient: 'from-[#0C2F4F] to-[#0C2F4F]',
-      bgGradient: 'from-[#0C2F4F]/5 to-[#0C2F4F]/5',
-      experience: '4+ Years'
-    }
-  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -205,65 +127,89 @@ const Team = () => {
 
 
         {/* Team Members Grid */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 lg:gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {teamMembers.map((member) => (
-            <motion.div
-              key={member.id}
-              className="group relative flex flex-col items-center cursor-pointer"
-              variants={cardVariants}
-              layout
-              onMouseEnter={() => setHoveredMember(member.id)}
-              onMouseLeave={() => setHoveredMember(null)}
-              whileHover={{ y: -10 }}
-            >
-              {/* Main Circular Card */}
+        {loading ? (
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0C2F4F]"></div>
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 lg:gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {teamMembers.map((member) => (
               <motion.div
-                className="relative w-40 h-40 lg:w-44 lg:h-44 xl:w-48 xl:h-48 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full border-4 border-white shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
+                key={member.id}
+                className="group relative flex flex-col items-center cursor-pointer"
+                variants={cardVariants}
+                layout
+                onMouseEnter={() => setHoveredMember(member.id)}
+                onMouseLeave={() => setHoveredMember(null)}
+                whileHover={{ y: -10 }}
               >
-                {/* Profile Image (Avatar with Initials) */}
-                <div className="w-full h-full flex items-center justify-center text-white text-2xl lg:text-3xl xl:text-3xl font-bold">
-                  {member.name.split(' ').map(n => n[0]).join('')}
-                </div>
-
-                {/* Hover Button */}
-                <motion.button
-                  className={`absolute inset-0 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 ${
-                    hoveredMember === member.id ? 'opacity-100 visible' : 'opacity-0 invisible'
-                  }`}
-                  onClick={() => openModal(member)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                {/* Main Circular Card */}
+                <motion.div
+                  className="relative w-40 h-40 lg:w-44 lg:h-44 xl:w-48 xl:h-48 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full border-4 border-white shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden flex items-center justify-center"
+                  whileHover={{ scale: 1.05 }}
                 >
-                  <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
-                    <span className="text-white font-medium text-xs lg:text-sm">View Profile</span>
-                  </div>
-                </motion.button>
-              </motion.div>
+                  {/* Profile Image */}
+                  {member.image && member.image !== '/api/placeholder/300/300' ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white text-2xl lg:text-3xl xl:text-3xl font-bold">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                  )}
 
-              {/* Position Label */}
-              <motion.div
-                className="mt-4 text-center"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h3 className="font-light text-lg lg:text-xl text-[#0C2F4F] mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-sm lg:text-base font-light text-[#0C2F4F]/80">
-                  {member.position}
-                </p>
+                  {/* Fallback initials (hidden by default, shown on image error) */}
+                  <div className="w-full h-full flex items-center justify-center text-white text-2xl lg:text-3xl xl:text-3xl font-bold" style={{display: 'none'}}>
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+
+                  {/* Hover Button */}
+                  <motion.button
+                    className={`absolute inset-0 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 ${
+                      hoveredMember === member.id ? 'opacity-100 visible' : 'opacity-0 invisible'
+                    }`}
+                    onClick={() => openModal(member)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
+                      <span className="text-white font-medium text-xs lg:text-sm">View Profile</span>
+                    </div>
+                  </motion.button>
+                </motion.div>
+
+                {/* Position Label */}
+                <motion.div
+                  className="mt-4 text-center"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h3 className="font-light text-lg lg:text-xl text-[#0C2F4F] mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-sm lg:text-base font-light text-[#0C2F4F]/80">
+                    {member.position}
+                  </p>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* Selected Member Details Modal */}
         {selectedMember && (
@@ -292,8 +238,26 @@ const Team = () => {
 
                 <div className="flex items-center space-x-6">
                   {/* Large Profile Circle */}
-                  <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-white text-2xl font-bold border-2 border-white/30">
-                    {selectedMember.name.split(' ').map(n => n[0]).join('')}
+                  <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-white text-2xl font-bold border-2 border-white/30 overflow-hidden">
+                    {selectedMember.image && selectedMember.image !== '/api/placeholder/300/300' ? (
+                      <img
+                        src={selectedMember.image}
+                        alt={selectedMember.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to initials if image fails to load
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : (
+                      <span>{selectedMember.name.split(' ').map(n => n[0]).join('')}</span>
+                    )}
+
+                    {/* Fallback initials (hidden by default, shown on image error) */}
+                    <span className="w-full h-full flex items-center justify-center" style={{display: 'none'}}>
+                      {selectedMember.name.split(' ').map(n => n[0]).join('')}
+                    </span>
                   </div>
 
                   <div>
@@ -416,23 +380,27 @@ const Team = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <motion.button
-              className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] text-brand-light px-6 py-2.5 rounded-lg font-light text-sm tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="relative z-10">View Open Positions</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </motion.button>
+            <Link to="/careers">
+              <motion.button
+                className="group relative overflow-hidden bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] text-brand-light px-6 py-2.5 rounded-lg font-light text-sm tracking-wide shadow-2xl hover:shadow-[#0C2F4F]/30 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="relative z-10">View Open Positions</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F] to-[#0C2F4F] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </motion.button>
+            </Link>
 
-            <motion.button
-              className="group relative border-2 border-[#0C2F4F]/20 text-[#0C2F4F] px-6 py-2.5 rounded-lg font-light text-sm hover:bg-[#0C2F4F]/5 transition-all duration-300 backdrop-blur-sm hover:border-[#0C2F4F]/50"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="relative z-10">Send Resume</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F]/10 to-[#0C2F4F]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
-            </motion.button>
+            <a href="mailto:jtech6996@gmail.com?subject=Job Application - Resume Submission&body=Hello,%0D%0A%0D%0AI am interested in joining your team. Please find my resume attached.%0D%0A%0D%0AThank you for your consideration.%0D%0A%0D%0ABest regards">
+              <motion.button
+                className="group relative border-2 border-[#0C2F4F]/20 text-[#0C2F4F] px-6 py-2.5 rounded-lg font-light text-sm hover:bg-[#0C2F4F]/5 transition-all duration-300 backdrop-blur-sm hover:border-[#0C2F4F]/50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="relative z-10">Send Resume</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0C2F4F]/10 to-[#0C2F4F]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+              </motion.button>
+            </a>
           </div>
         </motion.div>
       </div>

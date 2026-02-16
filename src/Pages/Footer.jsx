@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   Mail,
   Phone,
@@ -116,6 +118,7 @@ export const Footer = () => {
     e.preventDefault();
     // Handle newsletter subscription
     console.log('Subscribing email:', email);
+    toast.success('Successfully subscribed to our newsletter!');
     setEmail('');
   };
 
@@ -206,29 +209,35 @@ export const Footer = () => {
             <h3 className="text-xl font-bold font-serif text-brand-light mb-6">Our Services</h3>
             <div className="space-y-4">
               {services.map((service, index) => (
-                <motion.div
+                <Link
                   key={service.name}
-                  className="group flex items-center space-x-3 text-brand-light/80 hover:text-brand-light transition-all duration-300 cursor-pointer"
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: service.delay, duration: 0.5 }}
-                  whileHover={{ x: 8 }}
+                  to={service.name === 'Web Development' ? '/services' :
+                      service.name === 'Hardware Solutions' ? '/products' :
+                      service.name === 'Mobile Apps' ? '/services' : '/services'}
                 >
                   <motion.div
-                    className="w-8 h-8 bg-brand-light/10 backdrop-blur-lg rounded-lg flex items-center justify-center group-hover:bg-brand-light/20 transition-all duration-300 border border-brand-light/20"
-                    whileHover={{
-                      rotate: 360,
-                      scale: 1.2
-                    }}
-                    transition={{ duration: 0.6 }}
+                    className="group flex items-center space-x-3 text-brand-light/80 hover:text-brand-light transition-all duration-300 cursor-pointer"
+                    initial={{ x: -20, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: service.delay, duration: 0.5 }}
+                    whileHover={{ x: 8 }}
                   >
-                    <service.icon className="w-4 h-4 text-brand-light group-hover:text-brand-light transition-colors duration-300" />
+                    <motion.div
+                      className="w-8 h-8 bg-brand-light/10 backdrop-blur-lg rounded-lg flex items-center justify-center group-hover:bg-brand-light/20 transition-all duration-300 border border-brand-light/20"
+                      whileHover={{
+                        rotate: 360,
+                        scale: 1.2
+                      }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <service.icon className="w-4 h-4 text-brand-light group-hover:text-brand-light transition-colors duration-300" />
+                    </motion.div>
+                    <span className="group-hover:font-medium transition-all duration-300">
+                      {service.name}
+                    </span>
                   </motion.div>
-                  <span className="group-hover:font-medium transition-all duration-300">
-                    {service.name}
-                  </span>
-                </motion.div>
+                </Link>
               ))}
             </div>
           </motion.div>
@@ -237,19 +246,34 @@ export const Footer = () => {
           <motion.div variants={itemVariants} className="space-y-6">
             <h3 className="text-xl font-bold font-serif text-brand-light mb-6">Quick Links</h3>
             <div className="space-y-4">
-              {['About Us', 'Portfolio', 'Blog', 'Careers', 'Support', 'Privacy Policy'].map((link, index) => (
-                <motion.div
-                  key={link}
-                  className="text-brand-light/80 hover:text-brand-light transition-colors duration-300 cursor-pointer"
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  whileHover={{ x: 8 }}
-                >
-                  {link}
-                </motion.div>
-              ))}
+              {['About Us', 'Portfolio', 'Blog', 'Careers', 'Support', 'Privacy Policy'].map((link, index) => {
+                const routes = {
+                  'About Us': '/about',
+                  'Portfolio': '/portfolio',
+                  'Blog': '/blog',
+                  'Careers': '/careers',
+                  'Support': '/contact',
+                  'Privacy Policy': '/privacy'
+                };
+
+                return (
+                  <Link
+                    key={link}
+                    to={routes[link] || '/'}
+                  >
+                    <motion.div
+                      className="text-brand-light/80 hover:text-brand-light transition-colors duration-300 cursor-pointer"
+                      initial={{ x: -20, opacity: 0 }}
+                      whileInView={{ x: 0, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                      whileHover={{ x: 8 }}
+                    >
+                      {link}
+                    </motion.div>
+                  </Link>
+                );
+              })}
             </div>
           </motion.div>
 
