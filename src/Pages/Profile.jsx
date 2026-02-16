@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider/AuthContext';
 import useAxiosPublic from '../Hook/useAxiousPublic';
 import { User, Mail, Calendar, Shield, Edit3, Save, X, Camera, Trash2, Upload, Lock, Eye, EyeOff, Key } from 'lucide-react';
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 
 export const Profile = () => {
   const { user, loading } = useAuth();
@@ -257,8 +258,6 @@ export const Profile = () => {
     setUpdateMessage('');
 
     try {
-      // Import necessary Firebase functions dynamically
-      const { getAuth, EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import('firebase/auth');
       const auth = getAuth();
       const currentUser = auth.currentUser;
 
