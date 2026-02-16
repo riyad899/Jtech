@@ -19,7 +19,7 @@ const googleProvider = new GoogleAuthProvider();
 
 // Create axios instance for API calls
 const axiosPublic = axios.create({
-    baseURL: 'https://jtech-rho.vercel.app' // Using the same base URL as the hook
+    baseURL: import.meta.env.VITE_API_BASE_URL
 });
 
 export const AuthProvider = ({ children }) => {

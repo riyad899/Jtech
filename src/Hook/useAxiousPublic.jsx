@@ -3,7 +3,7 @@ import axios from 'axios';
 const useAxiosPublic = () => {
     // Create axios instance with base configuration
     const axiosPublic = axios.create({
-        baseURL: 'https://jtech-rho.vercel.app/',
+        baseURL: import.meta.env.VITE_API_BASE_URL,
         timeout: 10000, // 10 seconds timeout
         headers: {
             'Content-Type': 'application/json',
