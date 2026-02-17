@@ -10,6 +10,7 @@ import Features from '../Component/Features';
 import Team from '../Component/Team';
 import WhyChooseUs from '../Component/WhyChooseUs';
 import ContactUs from '../Component/ContactUs';
+import Courses from '../Component/Courses';
 import SEO from '../utils/SEO';
 
 
@@ -442,7 +443,7 @@ export const Home = () => {
       <Services/>
       <Shop/>
       <Portfolio/>
-
+      <Courses/>
       <Features/>
       <Team/>
       <ContactUs/>

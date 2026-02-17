@@ -6,3 +6,4 @@ export { ManageServices } from './ManageServices';
 export { ManageTeam } from './ManageTeam';
 export { ManageJobs } from './ManageJobs';
 export { ManageMessages } from './ManageMessages';
+export { ManageCourses } from './ManageCourses';

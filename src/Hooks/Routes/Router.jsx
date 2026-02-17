@@ -21,6 +21,8 @@ import Blog from '../../Pages/Blog';
 import Privacy from '../../Pages/Privacy';
 import PortfolioPage from '../../Pages/PortfolioPage';
 import Checkout from '../../Pages/Checkout';
+import { AllCourses } from '../../Pages/AllCourses';
+import SingleCourse from '../../Pages/SingleCourse';
 import Root from './Root';
 
 
@@ -61,6 +63,14 @@ const routes = createBrowserRouter([
             {
                 path: '/buy-service/:id',
                 element: <BuyService />
+            },
+            {
+                path: '/courses',
+                element: <AllCourses />
+            },
+            {
+                path: '/course/:id',
+                element: <SingleCourse />
             },
             {
                 path: '/about',

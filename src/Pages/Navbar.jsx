@@ -117,6 +117,7 @@ export const Navbar = () => {
                 { name: 'Home', path: '/' },
                 { name: 'Products', path: '/products' },
                 { name: 'Services', path: '/services' },
+                { name: 'Courses', path: '/courses' },
                 { name: 'About', path: '/about' },
                 { name: 'Contact', path: '/contact' }
               ].map((item) => (
@@ -364,6 +365,7 @@ export const Navbar = () => {
                 { name: 'Home', path: '/' },
                 { name: 'Products', path: '/products' },
                 { name: 'Services', path: '/services' },
+                { name: 'Courses', path: '/courses' },
                 { name: 'About', path: '/about' },
                 { name: 'Contact', path: '/contact' }
               ].map((item, index) => (

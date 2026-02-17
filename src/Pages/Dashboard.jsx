@@ -30,7 +30,7 @@ import {
   MessageSquare,
   Briefcase
 } from 'lucide-react';
-import { ManageUsers, ViewOrders, Analysis, ManageProducts, ManageTeam, ManageServices, ManageJobs, ManageMessages } from '../Component/Dashboard';
+import { ManageUsers, ViewOrders, Analysis, ManageProducts, ManageTeam, ManageServices, ManageJobs, ManageMessages, ManageCourses } from '../Component/Dashboard';
 
 export const Dashboard = () => {
   const { user, loading } = useAuth();
@@ -240,6 +240,7 @@ export const Dashboard = () => {
     { id: 'analysis', label: 'Analysis', icon: BarChart3 },
     { id: 'products', label: 'Manage Products', icon: Package },
     { id: 'services', label: 'Manage Service', icon: Wrench },
+    { id: 'courses', label: 'Manage Courses', icon: FileText },
     { id: 'team', label: 'Manage Team', icon: UserCheck },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'postjobs', label: 'Post Jobs', icon: Briefcase },
@@ -492,6 +493,9 @@ export const Dashboard = () => {
 
       case 'services':
         return <ManageServices />;
+
+      case 'courses':
+        return <ManageCourses />;
 
       case 'team':
         return <ManageTeam />;
