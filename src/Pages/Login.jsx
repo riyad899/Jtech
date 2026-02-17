@@ -123,6 +123,41 @@ export const Login = () => {
       // Authenticate with Google
       const result = await googleLogin();
 
+      // Check if user exists in database, if not create them
+      try {
+        const checkResponse = await axiosPublic.get(`/users/email/${result.user.email}`);
+        // User exists, update their login time
+        await axiosPublic.patch(`/users/${checkResponse.data._id}`, {
+          updatedAt: new Date().toISOString(),
+          photoURL: result.user.photoURL
+        });
+      } catch (error) {
+        // User doesn't exist (404), create new user in database
+        if (error.response?.status === 404) {
+          const displayName = result.user.displayName || 'Google User';
+          const [firstName, ...lastNameParts] = displayName.split(' ');
+          
+          const userData = {
+            uid: result.user.uid,
+            email: result.user.email.toLowerCase(),
+            name: displayName,
+            firstName: (firstName || 'Google').trim(),
+            lastName: (lastNameParts.join(' ') || 'User').trim(),
+            phone: result.user.phoneNumber || '',
+            role: 'user',
+            loginMethod: 'google',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            photoURL: result.user.photoURL || null,
+            isActive: true,
+            emailVerified: result.user.emailVerified || true
+          };
+
+          await axiosPublic.post('/users', userData);
+          toast.success('🎉 Welcome! Your account has been created.');
+        }
+      }
+
       // Store user data in localStorage for navbar compatibility
       localStorage.setItem('currentUser', JSON.stringify({
         email: result.user.email,

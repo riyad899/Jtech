@@ -19,50 +19,50 @@ Your Vercel environment variables have hidden newline characters (`%0A`).
    - Delete them completely
 
 3. **Re-add them ONE BY ONE:**
-   
+
    **Copy each value EXACTLY (no extra spaces/newlines):**
-   
+
    ```
    VITE_FIREBASE_API_KEY
    Value: AIzaSyBHmI0_1-0O9KUMi1GOFw3JlxRhxHEP9R8
    ```
-   
+
    ```
    VITE_FIREBASE_AUTH_DOMAIN
    Value: jtech-84a60.firebaseapp.com
    ```
-   
+
    ```
    VITE_FIREBASE_PROJECT_ID
    Value: jtech-84a60
    ```
-   
+
    ```
    VITE_FIREBASE_STORAGE_BUCKET
    Value: jtech-84a60.firebasestorage.app
    ```
-   
+
    ```
    VITE_FIREBASE_MESSAGING_SENDER_ID
    Value: 169602955371
    ```
-   
+
    ```
    VITE_FIREBASE_APP_ID
    Value: 1:169602955371:web:96e0232bf0e1efe3bd992e
    ```
-   
+
    ```
    VITE_FIREBASE_MEASUREMENT_ID
    Value: G-KZ4RJCQ2DQ
    ```
-   
+
    ```
    VITE_API_BASE_URL
    Value: https://jtech-rho.vercel.app
    ```
 
-4. **Important:** 
+4. **Important:**
    - ⚠️ Type each value manually, don't copy-paste if possible
    - ⚠️ Make sure cursor is at END of text (no trailing spaces)
    - ⚠️ Press DELETE/BACKSPACE a few times at end to remove hidden chars
