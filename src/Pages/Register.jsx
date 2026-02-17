@@ -53,7 +53,9 @@ const Register = () => {
   // Function to save user data to database
   const saveUserData = async (userData) => {
     try {
-      console.log('Attempting to save user data:', userData);
+      console.log('=== SAVING USER DATA TO DATABASE ===');
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+      console.log('User data being sent:', JSON.stringify(userData, null, 2));
 
       // Check if user already exists before saving
       const userExists = await checkUserExists(userData.email);
@@ -61,18 +63,23 @@ const Register = () => {
         throw new Error('A user with this email already exists in our database.');
       }
 
+      console.log('Posting to /users endpoint...');
       const response = await axiosPublic.post('/users', userData);
-      console.log('User data saved successfully:', response.data);
+      console.log('Response received:', response);
+      console.log('Response data:', response.data);
 
       // Check the response structure from your enhanced backend
       if (response.data.success === false) {
         throw new Error(response.data.message || 'Failed to save user data');
       }
 
-      toast.success('User profile saved to database!');
+      toast.success('✅ User profile saved to database!');
       return response.data;
     } catch (error) {
-      console.error('Error saving user data:', error);
+      console.error('=== ERROR SAVING USER DATA ===');
+      console.error('Error object:', error);
+      console.error('Error response:', error.response);
+      console.error('Error message:', error.message);
 
       // Handle specific error types from your enhanced backend
       if (error.message?.includes('already exists')) {
@@ -81,6 +88,8 @@ const Register = () => {
         toast.error(error.response?.data?.message || 'Invalid user data provided.');
       } else if (error.response?.status === 500) {
         toast.error('Server error occurred. Please try again later.');
+      } else if (error.code === 'ERR_NETWORK') {
+        toast.error('❌ Network error: Cannot connect to server. Please check your connection.');
       } else {
         toast.error('Failed to save user profile. Your account was created but profile data may be incomplete.');
       }

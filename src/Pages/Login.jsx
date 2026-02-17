@@ -5,6 +5,7 @@ import { useAuth } from '../AuthProvider/AuthContext';
 import { FcGoogle } from 'react-icons/fc';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useAxiosPublic from '../Hook/useAxiousPublic';
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,7 @@ export const Login = () => {
   const [resetLoading, setResetLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, googleLogin, resetPassword, loading } = useAuth();
+  const { axiosPublic } = useAxiosPublic();
 
   const handleInputChange = (e) => {
     setFormData({
@@ -120,44 +122,47 @@ export const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      console.log('=== GOOGLE LOGIN STARTED ===');
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
       // Authenticate with Google
       const result = await googleLogin();
+      console.log('Google auth successful, user email:', result.user.email);
 
       // Check if user exists in database, if not create them
       try {
+        console.log('Checking if user exists in database...');
         const checkResponse = await axiosPublic.get(`/users/email/${result.user.email}`);
+        console.log('User exists in database:', checkResponse.data);
+
         // User exists, update their login time
-        await axiosPublic.patch(`/users/${checkResponse.data._id}`, {
+        console.log('Updating user login time...');
+        const updateResponse = await axiosPublic.patch(`/users/${checkResponse.data._id}`, {
           updatedAt: new Date().toISOString(),
           photoURL: result.user.photoURL
         });
-      } catch (error) {
-        // User doesn't exist (404), create new user in database
-        if (error.response?.status === 404) {
-          const displayName = result.user.displayName || 'Google User';
-          const [firstName, ...lastNameParts] = displayName.split(' ');
-          
-          const userData = {
-            uid: result.user.uid,
-            email: result.user.email.toLowerCase(),
-            name: displayName,
-            firstName: (firstName || 'Google').trim(),
-            lastName: (lastNameParts.join(' ') || 'User').trim(),
-            phone: result.user.phoneNumber || '',
-            role: 'user',
-            loginMethod: 'google',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            photoURL: result.user.photoURL || null,
-            isActive: true,
-            emailVerified: result.user.emailVerified || true
-          };
+        console.log('User updated successfully:', updateResponse.data);
 
-          await axiosPublic.post('/users', userData);
-          toast.success('🎉 Welcome! Your account has been created.');
+      } catch (error) {
+        console.log('Error checking user:', error.response?.status, error.message);
+
+        // User doesn't exist (404), show message to register
+        if (error.response?.status === 404) {
+          console.log('User not found in database, prompting to register...');
+          toast.error('⚠️ Account not found! Please register with Google first.');
+
+          setTimeout(() => {
+            navigate('/register');
+          }, 2000);
+
+          return; // Stop the login process
+        } else {
+          console.error('Unexpected error checking user:', error);
+          throw error;
         }
       }
 
+      console.log('Storing user in localStorage...');
       // Store user data in localStorage for navbar compatibility
       localStorage.setItem('currentUser', JSON.stringify({
         email: result.user.email,
@@ -170,6 +175,7 @@ export const Login = () => {
 
       toast.success('🚀 Google login successful! Welcome back!');
 
+      console.log('Dispatching userLogin event...');
       // Trigger custom event to update navbar
       window.dispatchEvent(new CustomEvent('userLogin', {
         detail: {
@@ -182,11 +188,17 @@ export const Login = () => {
         }
       }));
 
+      console.log('Google login flow completed successfully!');
       setTimeout(() => {
         navigate('/');
       }, 2000);
 
     } catch (error) {
+      console.error('=== GOOGLE LOGIN ERROR ===');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Full error:', error);
+
       if (error.code === 'auth/popup-closed-by-user') {
         toast.error('Google sign-in was cancelled.');
       } else if (error.code === 'auth/popup-blocked') {
